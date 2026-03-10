@@ -29,8 +29,8 @@ theta0 = np.deg2rad(20.0)   # angulo inicial em radianos
 omega0 = 0.0                # velocidade angular inicial (rad/s)
 
 # Parametros numericos
-dt = 0.01                   # passo de tempo (s)
-t_final = 20.0              # tempo total (s)
+dt = 0.02                   # passo de tempo (s)
+t_final = 10.0              # tempo total (s)
 t = np.arange(0.0, t_final + dt, dt)
 N = len(t)
 

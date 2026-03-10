@@ -30,8 +30,8 @@ x0 = 1.0         # posição inicial (m)
 v0 = 0.0         # velocidade inicial (m/s)
 
 # Parâmetros numéricos
-dt = 0.01
-t_final = 20.0
+dt = 0.02
+t_final = 10.0
 t = np.arange(0.0, t_final + dt, dt)
 N = len(t)
 
@@ -105,7 +105,7 @@ def mostrar_saida_numerica(nome_metodo, x, v):
 # --------------------------
 # BLOCO 5: DESENHO DA MOLA
 # --------------------------
-def desenhar_mola(x_massa, x_parede=-1.2, espiras=12, amplitude=0.08, pontos=220):
+def desenhar_mola(x_massa, x_parede=-1.2, espiras=12, amplitude=0.08, pontos=100):
     # Posição final da mola: um pouco antes do centro da massa
     x_final = x_massa - 0.08
 
