@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
 
 # ============================================================
 # PENDULO SIMPLES
@@ -8,13 +7,11 @@ from matplotlib.animation import FuncAnimation
 # EDO do problema:
 #   theta'' + (g/L)*sin(theta) = 0
 #
-# Neste arquivo comparamos dois integradores:
+# Comparamos dois integradores:
 # 1) Euler-Cromer
 # 2) Runge-Kutta de 4a ordem (RK4)
 #
-# A visualizacao final mostra apenas dois paineis:
-# - aparato experimental com os dois metodos
-# - grafico normalizado theta(t)/theta0 com as duas curvas
+# A saida final mostra apenas a simulacao numerica e o plot comparativo.
 
 
 # --------------------------
@@ -90,82 +87,25 @@ def mostrar_saida_numerica(nome_metodo, theta):
 
 
 # --------------------------
-# BLOCO 5: ANIMACAO + GRAFICO
+# BLOCO 5: PLOT COMPARATIVO
 # --------------------------
-def animar_comparacao(theta_euler, theta_rk4):
-    x_euler = L * np.sin(theta_euler)
-    y_euler = -L * np.cos(theta_euler)
-    x_rk4 = L * np.sin(theta_rk4)
-    y_rk4 = -L * np.cos(theta_rk4)
-
+def plotar_comparacao(theta_euler, theta_rk4):
     theta_euler_n = theta_euler / theta0
     theta_rk4_n = theta_rk4 / theta0
-
-    max_frames = 180
-    passo_frame = max(1, N // max_frames)
-    frames_anim = np.arange(0, N, passo_frame)
-    intervalo_ms = max(15, int(1000 * dt * passo_frame))
-
-    fig, (ax_pendulo, ax_theta) = plt.subplots(1, 2, figsize=(12, 4.8))
-
-    # Painel 1: aparato com os dois metodos
-    ax_pendulo.set_title("Pendulo: Euler-Cromer x RK4")
-    ax_pendulo.set_xlabel("x (m)")
-    ax_pendulo.set_ylabel("y (m)")
-    ax_pendulo.set_xlim(-1.2 * L, 1.2 * L)
-    ax_pendulo.set_ylim(-1.2 * L, 0.2 * L)
-    ax_pendulo.set_aspect("equal", adjustable="box")
-    ax_pendulo.set_autoscale_on(False)
-    ax_pendulo.grid(alpha=0.3)
-    ax_pendulo.scatter([0.0], [0.0], color="black", s=30, label="pivo")
-
-    haste_euler, = ax_pendulo.plot([], [], color="tab:orange", lw=2, label="Euler-Cromer")
-    massa_euler, = ax_pendulo.plot([], [], "o", color="tab:orange", ms=10)
-    haste_rk4, = ax_pendulo.plot([], [], color="tab:green", lw=2, label="RK4")
-    massa_rk4, = ax_pendulo.plot([], [], "o", color="tab:green", ms=10)
-    ax_pendulo.legend(loc="lower left")
-
-    # Painel 2: grafico normalizado com os dois metodos
     amp = 1.1 * max(np.max(np.abs(theta_euler_n)), np.max(np.abs(theta_rk4_n)), 1.0)
-    ax_theta.set_title("Angulo normalizado")
-    ax_theta.set_xlabel("tempo (s)")
-    ax_theta.set_ylabel("theta(t)/theta0")
-    ax_theta.set_xlim(0.0, t_final)
-    ax_theta.set_ylim(-amp, amp)
-    ax_theta.grid(alpha=0.3)
 
-    linha_euler, = ax_theta.plot([], [], color="tab:orange", lw=2, label="Euler-Cromer")
-    linha_rk4, = ax_theta.plot([], [], color="tab:green", lw=2, label="RK4")
-    ax_theta.legend(loc="upper right")
-
-    def init():
-        ax_pendulo.set_xlim(-1.2 * L, 1.2 * L)
-        ax_pendulo.set_ylim(-1.2 * L, 0.2 * L)
-        haste_euler.set_data([], [])
-        massa_euler.set_data([], [])
-        haste_rk4.set_data([], [])
-        massa_rk4.set_data([], [])
-        linha_euler.set_data([], [])
-        linha_rk4.set_data([], [])
-        return haste_euler, massa_euler, haste_rk4, massa_rk4, linha_euler, linha_rk4
-
-    def update(frame):
-        ax_pendulo.set_xlim(-1.2 * L, 1.2 * L)
-        ax_pendulo.set_ylim(-1.2 * L, 0.2 * L)
-        haste_euler.set_data([0.0, x_euler[frame]], [0.0, y_euler[frame]])
-        massa_euler.set_data([x_euler[frame]], [y_euler[frame]])
-        haste_rk4.set_data([0.0, x_rk4[frame]], [0.0, y_rk4[frame]])
-        massa_rk4.set_data([x_rk4[frame]], [y_rk4[frame]])
-
-        linha_euler.set_data(t[: frame + 1], theta_euler_n[: frame + 1])
-        linha_rk4.set_data(t[: frame + 1], theta_rk4_n[: frame + 1])
-        return haste_euler, massa_euler, haste_rk4, massa_rk4, linha_euler, linha_rk4
-
-    ani = FuncAnimation(fig, update, frames=frames_anim, init_func=init, interval=intervalo_ms, blit=False)
-    fig._ani = ani
+    fig, ax = plt.subplots(figsize=(9, 4.8))
+    ax.plot(t, theta_euler_n, color="tab:orange", lw=2, label="Euler-Cromer")
+    ax.plot(t, theta_rk4_n, color="tab:green", lw=2, label="RK4")
+    ax.set_title("Pendulo simples: comparacao dos metodos")
+    ax.set_xlabel("tempo (s)")
+    ax.set_ylabel("theta(t)/theta0")
+    ax.set_xlim(0.0, t_final)
+    ax.set_ylim(-amp, amp)
+    ax.grid(alpha=0.3)
+    ax.legend(loc="upper right")
     plt.tight_layout()
     plt.show()
-    return ani
 
 
 # --------------------------
@@ -176,4 +116,4 @@ theta_rk4, omega_rk4 = simular_rk4()
 
 mostrar_saida_numerica("Euler-Cromer", theta_euler)
 mostrar_saida_numerica("Runge-Kutta 4", theta_rk4)
-animar_comparacao(theta_euler, theta_rk4)
+plotar_comparacao(theta_euler, theta_rk4)
